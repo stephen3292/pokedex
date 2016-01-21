@@ -31308,6 +31308,7 @@
 	var React = __webpack_require__(1);
 	var pokemonStore = __webpack_require__(215);
 	var apiUtil = __webpack_require__(208);
+	var ToysIndex = __webpack_require__(236);
 
 	var PokemonDetail = React.createClass({
 	  displayName: 'PokemonDetail',
@@ -31352,7 +31353,8 @@
 	            this.state.pokemon.moves,
 	            React.createElement('br', null),
 	            React.createElement('img', { src: this.state.pokemon.image_url })
-	          )
+	          ),
+	          React.createElement('div', null)
 	        )
 	      );
 	    } else {
@@ -31363,6 +31365,20 @@
 	});
 
 	module.exports = PokemonDetail;
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	var ToysIndex = React.createClass({
+	  displayName: 'ToysIndex',
+
+	  render: function () {}
+	});
+
+	module.exports = ToysIndex;
 
 /***/ }
 /******/ ]);

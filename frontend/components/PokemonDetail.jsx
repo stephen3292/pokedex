@@ -1,6 +1,7 @@
 var React = require('react');
 var pokemonStore = require('../stores/PokemonStore.js');
 var apiUtil = require('../util/apiUtil.js');
+var ToysIndex = require('./ToysIndex.jsx');
 
 var PokemonDetail = React.createClass({
   getStateFromStore: function() {
@@ -38,6 +39,8 @@ var PokemonDetail = React.createClass({
           {this.state.pokemon.moves}<br/>
           <img src={this.state.pokemon.image_url}/>
           </div>
+            <div>
+            </div>
           </div>
         </div>
       );
