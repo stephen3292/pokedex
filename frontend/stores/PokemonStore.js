@@ -1,7 +1,6 @@
 var AppDispatcher = require('../dispatcher/dispatch');
 var Store = require('flux/utils').Store;
 var PokemonConstants = require('../constants/PokemonConstants');
-
 var _pokemons = {};
 
 var pokemonStore = new Store(AppDispatcher);
@@ -13,6 +12,10 @@ pokemonStore.resetPokemons = function(pokemons){
 
 };
 
+pokemonStore.resetPokemon = function(pokemon){
+  _pokemons[pokemon.id] = pokemon;
+};
+
 pokemonStore.all = function(){
   var result = [];
   for (var i in _pokemons) {
@@ -21,11 +24,19 @@ pokemonStore.all = function(){
   return result;
 };
 
+pokemonStore.find = function(id) {
+  return _pokemons[id];
+};
+
 pokemonStore.__onDispatch = function (payload) {
 
   switch(payload.actionType) {
     case PokemonConstants.POKEMONS_RECEIVED:
-    pokemonStore.resetPokemons(payload.pokemons);
+      pokemonStore.resetPokemons(payload.pokemons);
+      break;
+    case PokemonConstants.POKEMON_RECEIVED:
+      pokemonStore.resetPokemon(payload.pokemon);
+      break;
   }
   pokemonStore.__emitChange();
 };

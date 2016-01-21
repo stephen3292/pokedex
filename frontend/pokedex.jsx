@@ -2,9 +2,10 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Router = require('react-router').Router;
 var Route = require('react-router').Route;
-// var pokemonApiUtil = require('./util/apiUtil.js');
-// var PokemonStore = require('./stores/PokemonStore.js');
+var pokemonApiUtil = require('./util/apiUtil.js');
+var PokemonStore = require('./stores/PokemonStore.js');
 var PokemonsIndex = require('./components/pokemonsIndex');
+var PokemonDetail = require('./components/PokemonDetail');
 
 var App = React.createClass({
 

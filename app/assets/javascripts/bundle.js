@@ -48,9 +48,10 @@
 	var ReactDOM = __webpack_require__(158);
 	var Router = __webpack_require__(159).Router;
 	var Route = __webpack_require__(159).Route;
-	// var pokemonApiUtil = require('./util/apiUtil.js');
-	// var PokemonStore = require('./stores/PokemonStore.js');
+	var pokemonApiUtil = __webpack_require__(208);
+	var PokemonStore = __webpack_require__(215);
 	var PokemonsIndex = __webpack_require__(233);
+	var PokemonDetail = __webpack_require__(235);
 
 	var App = React.createClass({
 	  displayName: 'App',
@@ -24329,6 +24330,7 @@
 
 	var pokemonApiUtil = {
 	  fetchAllPokemons: function () {
+	    console.log("running");
 	    $.ajax({
 	      type: "get",
 	      url: "api/pokemon",
@@ -24345,7 +24347,7 @@
 	      url: "api/pokemon/" + id,
 	      dataType: "json",
 	      success: function (data) {
-	        console.log(data);
+	        PokemonActions.receiveSinglePokemon(data);
 	      }
 	    });
 	  }
@@ -24686,6 +24688,13 @@
 	      actionType: PokemonConstants.POKEMONS_RECEIVED,
 	      pokemons: pokemons
 	    });
+	  },
+
+	  receiveSinglePokemon: function (pokemon) {
+	    AppDispatcher.dispatch({
+	      actionType: PokemonConstants.POKEMON_RECEIVED,
+	      pokemon: pokemon
+	    });
 	  }
 
 	};
@@ -24697,7 +24706,8 @@
 /***/ function(module, exports) {
 
 	var PokemonConstants = {
-	  POKEMONS_RECEIVED: "POKEMONS_RECEIVED"
+	  POKEMONS_RECEIVED: "POKEMONS_RECEIVED",
+	  POKEMON_RECEIVED: "POKEMON_RECEIVED"
 	};
 
 	module.exports = PokemonConstants;
@@ -24709,7 +24719,6 @@
 	var AppDispatcher = __webpack_require__(209);
 	var Store = __webpack_require__(216).Store;
 	var PokemonConstants = __webpack_require__(214);
-
 	var _pokemons = {};
 
 	var pokemonStore = new Store(AppDispatcher);
@@ -24720,6 +24729,10 @@
 	  }
 	};
 
+	pokemonStore.resetPokemon = function (pokemon) {
+	  _pokemons[pokemon.id] = pokemon;
+	};
+
 	pokemonStore.all = function () {
 	  var result = [];
 	  for (var i in _pokemons) {
@@ -24728,11 +24741,19 @@
 	  return result;
 	};
 
+	pokemonStore.find = function (id) {
+	  return _pokemons[id];
+	};
+
 	pokemonStore.__onDispatch = function (payload) {
 
 	  switch (payload.actionType) {
 	    case PokemonConstants.POKEMONS_RECEIVED:
 	      pokemonStore.resetPokemons(payload.pokemons);
+	      break;
+	    case PokemonConstants.POKEMON_RECEIVED:
+	      pokemonStore.resetPokemon(payload.pokemon);
+	      break;
 	  }
 	  pokemonStore.__emitChange();
 	};
@@ -31207,6 +31228,7 @@
 	var pokemonStore = __webpack_require__(215);
 	var pokemonApiUtil = __webpack_require__(208);
 	var PokemonIndexItem = __webpack_require__(234);
+	var PokemonDetail = __webpack_require__(235);
 
 	var PokemonsIndex = React.createClass({
 	  displayName: 'PokemonsIndex',
@@ -31254,22 +31276,93 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
+	var History = __webpack_require__(159).History;
 
 	var PokemonIndexItem = React.createClass({
 	  displayName: 'PokemonIndexItem',
 
+	  mixins: [History],
+
+	  handleClick: function (e) {
+	    this.history.pushState(null, "/pokemon/" + this.props.pokemon.id);
+	  },
+
 	  render: function () {
 	    return React.createElement(
 	      'li',
-	      null,
+	      { onClick: this.handleClick },
 	      this.props.pokemon.name,
 	      React.createElement('br', null),
-	      this.props.pokemon.poke_type
+	      this.props.pokemon.poke_type,
+	      React.createElement('br', null)
 	    );
 	  }
 	});
 
 	module.exports = PokemonIndexItem;
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var pokemonStore = __webpack_require__(215);
+	var apiUtil = __webpack_require__(208);
+
+	var PokemonDetail = React.createClass({
+	  displayName: 'PokemonDetail',
+
+	  getStateFromStore: function () {
+	    return pokemonStore.find(parseInt(this.props.params.pokemonId));
+	  },
+
+	  getInitialState: function () {
+	    return { pokemon: this.getStateFromStore() };
+	  },
+
+	  _onChange: function () {
+	    this.setState({ pokemon: this.getStateFromStore() });
+	  },
+
+	  componentDidMount: function () {
+	    pokemonStore.addListener(this._onChange);
+	  },
+
+	  componentWillReceiveProps: function (newProps) {
+	    var id = parseInt(newProps.params.pokemonId);
+	    var pokemon = apiUtil.fetchOnePokemon(id);
+	    this.setState({ pokemon: pokemon });
+	  },
+
+	  render: function () {
+	    if (this.state.pokemon) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'pokemon-detail-pane' },
+	          React.createElement(
+	            'div',
+	            { className: 'detail' },
+	            this.state.pokemon.attack,
+	            React.createElement('br', null),
+	            this.state.pokemon.defense,
+	            React.createElement('br', null),
+	            this.state.pokemon.moves,
+	            React.createElement('br', null),
+	            React.createElement('img', { src: this.state.pokemon.image_url })
+	          )
+	        )
+	      );
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
+
+	});
+
+	module.exports = PokemonDetail;
 
 /***/ }
 /******/ ]);

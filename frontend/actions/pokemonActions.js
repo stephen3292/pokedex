@@ -11,6 +11,13 @@ var pokemonActions = {
     });
   },
 
+  receiveSinglePokemon: function(pokemon) {
+    AppDispatcher.dispatch({
+      actionType: PokemonConstants.POKEMON_RECEIVED,
+      pokemon: pokemon,
+    });
+  }
+
 };
 
 module.exports = pokemonActions;

@@ -2,6 +2,7 @@ var React = require('react');
 var pokemonStore = require('../stores/PokemonStore.js');
 var pokemonApiUtil = require('../util/apiUtil.js');
 var PokemonIndexItem = require('./PokemonIndexItem.jsx');
+var PokemonDetail = require('./PokemonDetail.jsx');
 
 var PokemonsIndex = React.createClass({
 
